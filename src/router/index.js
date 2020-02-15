@@ -1,22 +1,31 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Trending from '../views/Trending.vue'
+import Promotion from '../views/Promotion.vue'
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
+const routes = [{
+    path: '/trending',
+    name: 'Trending',
+    component: Trending
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/promotion',
+    name: 'Promotion',
+    component: Promotion
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: Register
   }
 ]
 
@@ -26,4 +35,15 @@ const router = new VueRouter({
   routes
 })
 
-export default router
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/login', '/register'];
+  const authRequied = !publicPages.includes(to.path);
+  const loggedIn = localStorage.getItem('access_token');
+
+  if (authRequied && !loggedIn) {
+    return next('/login');
+  }
+  next();
+})
+
+export default router;
